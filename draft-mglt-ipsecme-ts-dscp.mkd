@@ -42,14 +42,11 @@ The new Traffic Selector type TS_DSCP consists of DSCP values associated to the 
 # Introduction
 
 {{!RFC4301}} does not include Differentiated Services Field Codepoints (DSCP) as Traffic Selectors (TS). 
-{{!RFC4301, Section 4.1}} acknowledges that agregating traffic with mutliple DSCP over the same SA may result in inappropriate discarding of lower priority packets due to the windowing mechanism used by this feature. 
+{{!RFC4301, Section 4.1}} acknowledges that aggregating traffic with mutliple DSCP over the same SA may result in inappropriate discarding of lower priority packets due to the windowing mechanism used by this feature. 
 However, to address such concern, {{!RFC4301, Section 4.1}} recommends the sender implements a "classifier" mechanism which dispatches the traffic over multiple SAs. 
 
-Such "classifier" comes with the following drawbacks:
-
-* Inbound and outbound traffic may take SA negotiated via different IKEv2 sessions and thus makes SA management more complex with an unecessary SA. This causes both a resource issue - especially with hardware implementation that are designed with a limited number of SAa - as well operational and management issues.  
-* drawback 2....
-
+Such "classifier" results in inbound and outbound traffic may take SA negotiated via different IKEv2 sessions and thus makes SA management more complex with an unnecessary SAs.
+This causes both a resource issue - especially with hardware implementation that are designed with a limited number of SAa - as well operational and management issues.  
 
 This document specifies a new Traffic Selector Type TS_DSCP for IKEv2 that can be used to negotiate DSCP as additional selectors for the Security Policy Database (SPD) to further restrict the type of traffic allowed to be sent and received over the IPsec SA.
 
@@ -86,16 +83,16 @@ As mentioned in {{!RFC7296, Section 3.13.1}}, All fields other than TS Type and 
 ##  TS_DSCP properties
 
 A TS MUST NOT contain more than one TS_DSCP. 
-Upon receieving more than one TS_DSCP, an TS_UNACCEPTABLE Error Notify message MUST be returned.
+Upon receiving more than one TS_DSCP, an TS_UNACCEPTABLE Error Notify message MUST be returned.
 
 The absence of the TS_DSCP indicates that all DSCP values will match the SA. 
-A TS_DSCP MUST explicitly contain all DSCP values that a valide IP packet MUST match. 
+A TS_DSCP MUST explicitly contain all DSCP values that a valid IP packet MUST match. 
 
 The DSCP values contents are opaque to the IKE implementation.
 That is, the IKE implementation might not have any knowledge of the meaning of this selector, other than as a type and opaque value to pass to the SPD.
 
 A zero length list of DSCP Values indicates that no DSCP values are associated to the SA. In other words, no traffic qualifies.
-Upon receiveing such a TS_DSCP a TS_UNACCEPTABLE Error Notify message MUST be returned by the IKEv2 responder.
+Upon receiving such a TS_DSCP a TS_UNACCEPTABLE Error Notify message MUST be returned by the IKEv2 responder.
 A responder that does not accept any of the proposed DSCP values SHOULD return a zero length list of DSCP Values. 
 This clearly indicates the issue is related to the proposed DSCP values as opposed to the presence of the TS_TYPE TS_DSCP. 
 The responder MAY also send a TS_UNACCEPTABLE Error Notify message. 
