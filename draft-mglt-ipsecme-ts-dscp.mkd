@@ -1,7 +1,7 @@
 ---
 title: Traffic Selector for Internet Key Exchange version 2 to add support Differentiated Services Field Codepoints (DSCP) 
 abbrev: TS_DSCP
-docname: draft-mglt-ipsecme-ts-dscp-00
+docname: draft-mglt-ipsecme-ts-dscp-01
 ipr: trust200902
 area: Security
 wg: IPsecme
@@ -46,7 +46,12 @@ The new Traffic Selector type TS_DSCP consists of DSCP values associated to the 
 However, to address such concern, {{!RFC4301, Section 4.1}} recommends the sender implements a "classifier" mechanism which dispatches the traffic over multiple SAs. 
 
 Such "classifier" results in inbound and outbound traffic may take SA negotiated via different IKEv2 sessions and thus makes SA management more complex with an unnecessary SAs.
-This causes both a resource issue - especially with hardware implementation that are designed with a limited number of SAa - as well operational and management issues.  
+This causes both a resource issue - especially with hardware implementations that are designed with a limited number of SAs - as well operational and management issues.  
+Typically, if the DSCP values are negotiated the initiator and the responder can agree to send a set of DSCP value over one SA and another set of DSCP value over a second channel.
+If DSCP values are not agreed and between (for example) 2 SAs, it is unlikely the initiator and the responder miraculously select the same subset of DSCP values over the same SAs.
+Instead each peer is likely that inbound and outbound traffic take different SA and as such does not solve the issue of discarding lower priority packets associated to different class of traffic sharing a given SA. 
+This makes traffic management at least much harder as if not impossible. 
+Increasing the number of SAs as to lower the traffic rate over each of these SA might reduce the probability of packet being dropped, but is not deterministic and as such cannot be considered as a solution especially when considering hardware with a hard limitation on the number of SAs. 
 
 This document specifies a new Traffic Selector Type TS_DSCP for IKEv2 that can be used to negotiate DSCP as additional selectors for the Security Policy Database (SPD) to further restrict the type of traffic allowed to be sent and received over the IPsec SA.
 
@@ -61,8 +66,7 @@ This document defines a new TS_TYPE, TS_DSCP that contains a list of opaque DSCP
 
 
 
-``` bash
-                     1                   2                   3
+```
  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
 +---------------+---------------+-------------------------------+
 |   TS Type     |    Reserved   |       Selector Length         |
@@ -78,43 +82,50 @@ As mentioned in {{!RFC7296, Section 3.13.1}}, All fields other than TS Type and 
 * TS Type (one octet) - Set to TBD1 for TS_DSCP
 * Selector Length (2 octets, unsigned integer) - Specifies the length of this Traffic Selector substructure including the header. 
 * Reserved (one octet): MUST be set to zero by the sender and MUST be ignored by the receiver.
-* List of DSCP Values: The concatenation of the DSCP values associated to the SA. Each value is coded over one octet and considered as opaque value by the SAD.
+* List of DSCP Values: The concatenation of the DSCP values associated to the SA. Each value is coded over one octet and considered as opaque value by the SAD. 
+DSCP values are ordered in an increasing number.   
 
 ##  TS_DSCP properties
 
-A TS MUST NOT contain more than one TS_DSCP. 
-Upon receiving more than one TS_DSCP, an TS_UNACCEPTABLE Error Notify message MUST be returned.
+A TS MUST NOT contain more than one TS_DSCP. Values contained in the TS_DSCP MUST be unique and ordered in increasing number. 
+If these conditions are not met, an TS_UNACCEPTABLE Error Notify message MUST be returned.
 
 The absence of the TS_DSCP indicates that all DSCP values will match the SA. 
 A TS_DSCP MUST explicitly contain all DSCP values that a valid IP packet MUST match. 
 
-The DSCP values contents are opaque to the IKE implementation.
-That is, the IKE implementation might not have any knowledge of the meaning of this selector, other than as a type and opaque value to pass to the SPD.
-
-A zero length list of DSCP Values indicates that no DSCP values are associated to the SA. In other words, no traffic qualifies.
+A zero length list of DSCP Values indicates that no DSCP values are associated to the SA.
+In other words, no traffic qualifies.
 Upon receiving such a TS_DSCP a TS_UNACCEPTABLE Error Notify message MUST be returned by the IKEv2 responder.
-A responder that does not accept any of the proposed DSCP values SHOULD return a zero length list of DSCP Values. 
-This clearly indicates the issue is related to the proposed DSCP values as opposed to the presence of the TS_TYPE TS_DSCP. 
-The responder MAY also send a TS_UNACCEPTABLE Error Notify message. 
 
-Upon receiving a list of DSCP values, the responder MAY accept the full list or MAY narrow down the list.
-The responder MUST NOT add new DSCP values and the initiator MUST NOT create the Child SA.
 
-When a TS_DSCP is included in the TSi/TSr Payloads.  
-If the responder replies with TSi/TSr that include the TS_DSCP, than the Child SA MUST be created including the negotiated DSCP values.  
-If the responder did not include a TS_DSCP in its response, then the initiator will install the Child SA without including any DSCP values.
-If the initiator required the TS_DSCP, it MUST not install the Child SA and it MUST send a Delete notification for the Child SA so the responder can uninstall its Child SA.
+A responder that understandsMAY respond with a TS_DSCP that contains a subset of the set of values sent by the initiator.
+In any other cases, a TS_UNACCEPTABLE Error Notify message MUST be returned by the IKEv2 responder.
+
+If the presence and values of the TS_DSCP provided by the responder does not exactly matches the presence and the values of the TS_DSCP provided by the initiator, the initiator MUST NOT create Child SAs and SHOULD send a Delete notification for the Child SA so the responder can uninstall its Child SA.
 
 # Traffic Selector negotiation
 
-If the TS contains a TS_DSCP along with another TS_TYPE, the responder MUST create each TS response for the Traffic Selector of TS_TYPE TS_IPV4_ADDR_RANGE  or  TS_IPV6_ADDR_RANGE, using its normal rules specifed for each of those TS_TYPE. 
-The responder includes the acceptable DSCP values. These values will apply to all Traffic Selectors mentioned in the resulting TS - including an empty list of DSCP values.
+TS_DSCP MUST MUST be used along with an IP address selector type such as TS_IPV4_ADDR_RANGE and/or TS_IPV6_ADDR_RANGE. 
+If this condition is not met an TS_UNACCEPTABLE Error Notify message MUST be returned.
+
+
+If the TS contains a TS_DSCP along with another TS_TYPE, the responder MUST create each TS response for the Traffic Selector of TS_TYPE TS_IPV4_ADDR_RANGE or TS_IPV6_ADDR_RANGE, using its normal rules specified for each of those TS_TYPE. 
+The responder includes the acceptable DSCP values. These values will apply to all Traffic Selectors mentioned in the resulting TS.
 If this is not possible, it MUST return a TS_UNACCEPTABLE Error Notify payload.
 
-As TS_DSCP MAY NOT be supported, the initiator SHOULD first try
-to negotiate the Child SA with the TS payload including the optional
-TS_DSCP.
-If such a negotiation results in receiving a TS_UNACCEPTABLE Error Notify, it SHOULD attempt a new Child SA negotiation using the same TS but without TS_DSCP.
+The responder MAY respond select a subset of the DSCP values sent by the initiator and send a TS_DSCP payload or omit that TS_DSCP payload.
+If the responder provides the TS_DSCP, the initiator creates the SA with the specified subset of DSCP values.
+
+If the subset of DSCP values do no match those of the initiator, this may indicate the responder's policy might be stricter regarding DSCP values. 
+The initiator created the Child SA with the subset of DSCP values.
+The initiator SHOULD (upon local configuration) try to negotiate a separate SA associated to the missing DSCP values.
+The other selectors of different TS_TYPE SHOULD take the same values as the initial ones.
+
+If the TS_DSCP is omitted the initiator (upon local configuration) MAY accept the response in which case DSCP is not considered as a traffic selector, that is to say all DSCP values are considered matching the policy.
+On the other hand, the initiator (upon local configuration) MAY also reject the offer and send a Delete Notify Payload. 
+
+If the responder  returns a TS_UNACCEPTABLE Error Notify Payload, this might result in the responder not supporting TS_DSCP - though discarding the TS_DSCP would have been more appropriated. 
+The initiator (upon local configuration) MAY restart the IKE negotiation with the same TSi/Tsr but removing the TS_DSCP.    
 
 
 # IANA Considerations
@@ -132,11 +143,17 @@ IANA is requested to allocate two values in the "IKEv2 Traffic Selector Types" r
 
 # Security Considerations
 
-
 A packet that matches an SPD entry for all components except the DSCP values would be treated as "not matching".
 If no other SPD entries match, the traffic might end up being transmitted in the clear. 
 
 It is not different from ensuring that IP traffic is not sent in clear text and it is presumed that the IPsec subsystem itself would install a REJECT/DISCARD rule in the SPD to prevent that traffic from being transmitted without IPsec protection.
+
+To avoid such situation, it is RECOMMENDED to introduce a SP to does not consider the DSCP values after those SP specifying the DSCP.
+This is very similar to placing a default SP that protects all traffic by default.
+ 
+Upon receiving a TS_UNACCEPTABLE Error Notify or an incorrect response, the initiator MAY retry the IKEv2 negotiation without specifying the DSCP values.
+The initiator MAY handle the DSCP value on its own for outbound traffic, but MUST be prepared to receive any DSCP values from the responder.   
+
 
 # Acknowledgements
 
@@ -145,6 +162,8 @@ It is not different from ensuring that IP traffic is not sent in clear text and 
 
 # Illustrative Example
 
+The example shows a negotiation where each TSi / TSr are negotiating different values of DSCP.
+The purpose of this example is to show this is theoretically feasible, but we currently expect that  TS_DSCP_LIST1 and TS_DSCP_LIST2 have the same values. 
 
 ```
 Initiator                         Responder
@@ -153,12 +172,12 @@ HDR, SK {N(REKEY_SA), SA, Ni, [KEi,]
     TSi, TSr}   -->
     with:
       TSi = ( TS_IPV6_ADDR_RANGE, TS_DSCP_LIST1 )
-      TSr = ( TS_IPV6_ADDR_RANGE )
+      TSr = ( TS_IPV6_ADDR_RANGE, TS_DSCP_LIST2 )
 
 
                                 <--  HDR, SK {SA, Nr, [KEr,]
                                          TSi, TSr}
     with:
       TSi = ( TS_IPV6_ADDR_RANGE, TS_DSCP_LIST1 )
-      TSr = ( TS_IPV6_ADDR_RANGE )
+      TSr = ( TS_IPV6_ADDR_RANGE, TS_DSCP_LIST2 )
 ```
