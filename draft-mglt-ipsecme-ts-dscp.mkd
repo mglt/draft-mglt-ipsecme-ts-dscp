@@ -1,7 +1,7 @@
 ---
 title: Traffic Selector for Internet Key Exchange version 2 to add support Differentiated Services Field Codepoints (DSCP) 
 abbrev: TS_DSCP
-docname: draft-mglt-ipsecme-ts-dscp-01
+docname: draft-mglt-ipsecme-ts-dscp-02
 ipr: trust200902
 area: Security
 wg: IPsecme
@@ -30,6 +30,13 @@ author:
         name: U. Parkholm
         org: Ericsson
         email: ulf.x.parkholm@ericsson.com
+      -
+        ins: D. Liu
+        name: Daiying Liu
+        org: Ericsson
+        role: editor
+        email: harold.liu@ericsson.com
+
 
 
 --- abstract
@@ -127,6 +134,22 @@ On the other hand, the initiator (upon local configuration) MAY also reject the 
 If the responder  returns a TS_UNACCEPTABLE Error Notify Payload, this might result in the responder not supporting TS_DSCP - though discarding the TS_DSCP would have been more appropriated. 
 The initiator (upon local configuration) MAY restart the IKE negotiation with the same TSi/Tsr but removing the TS_DSCP.    
 
+# IPsec encapsulation
+
+This document creates the DSCP traffic selector which complements those defined by {{!RFC4301}}.
+
+A IP packet match the DSCP selector when its DSCP value matches the one (or one of those) specified by the DSCP selector.
+When DSCP is not specified or is an empty list, it is understood as bypassing the DSCP values, which means that all DSCP values will result in a match.
+In other words, the non existing DSCP can be replaced by the DSCP array 0 - 255.
+These various representations are matching the the description of "DSCP values" in the SA.
+However TS_DSCP does not accept an empty list and an implementation MUST omit the TS_DSCP to be sent - sending 256 possible values is not RECOMMENDED for obvious reasons.
+
+In the SPD, the PFP flags applies to the DSCP selector and means that a new SA is created when a SDP match occurs without any existing SA matching the specific DSCP value of the IP header.  
+The SAD defines "DSCP values" to indicate the specific values that matche the SA (see {{!RFC4301}} Section 4.4.2.1..
+When used in conjunction of the traffic selector DSCP, this field MUST either take the same values as those of the DSCP traffic selector or be left emtpy.
+Note that the difference between the DSCP traffic selector and the "DSCP values" is that values specified by the DSCP traffic selector MUST be checked against inbound traffic arriving on the SA, while values specified by the "DSCP values" MUST NOT be checked.
+
+"Bypass DSCP" remains unchanged. However, when the tunnel mode is used, it is RECOMMENDED to map the inner DSCP value to the outer DSCP value of the header. 
 
 # IANA Considerations
 
