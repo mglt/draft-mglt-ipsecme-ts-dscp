@@ -177,6 +177,7 @@ This is very similar to placing a default SP that protects all traffic by defaul
 Upon receiving a TS_UNACCEPTABLE Error Notify or an incorrect response, the initiator MAY retry the IKEv2 negotiation without specifying the DSCP values.
 The initiator MAY handle the DSCP value on its own for outbound traffic, but MUST be prepared to receive any DSCP values from the responder.   
 
+It is worth mentioning that TS_DSCP is always used in combination with other selectors and cannot be used "alone", which prevents TS_DSCP from inferring with other policies. TS_DSCP is just a refinement of the existing TS, so in this respect the draft does not reduce security in any way.
 
 # Acknowledgements
 
