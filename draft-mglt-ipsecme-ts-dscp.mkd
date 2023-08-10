@@ -1,6 +1,6 @@
 ---
-title: Differentiated Services Field Codepoints  Internet Key Exchange version 2 Notification
-abbrev: DSCP pseudo TS
+title: Differentiated Services Field Codepoints Internet Key Exchange version 2 Notification
+abbrev: DSCP_VALUES
 docname: draft-mglt-ipsecme-ts-dscp-04
 ipr: trust200902
 area: Security
