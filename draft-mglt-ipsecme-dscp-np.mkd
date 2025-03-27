@@ -1,7 +1,7 @@
 ---
 title: Differentiated Services Field Codepoints Internet Key Exchange version 2 Notification
 abbrev: DSCP Notify Payload
-docname: draft-mglt-ipsecme-dscp-np-00
+docname: draft-mglt-ipsecme-dscp-np-02
 ipr: trust200902
 area: Security
 wg: IPsecme
@@ -27,35 +27,37 @@ author:
         org: Ericsson
         email: joel.halpern@ericsson.com
       -
-        ins: U. Parkholm
-        name: U. Parkholm
+        ins: S. Preda
+        name: Stere Preda
         org: Ericsson
-        email: ulf.x.parkholm@ericsson.com
+        email: stere.preda@ericsson.com
       -
         ins: D. Liu
         name: Daiying Liu
         org: Ericsson
         email: harold.liu@ericsson.com
+      -
+        ins: U. Parkholm
+        name: U. Parkholm
+        org: Ericsson
+        email: ulf.x.parkholm@ericsson.com
 
 
 
 --- abstract
 
-
-IPsec supports "classifier" mechanism to send traffic with specific Differentiated Services Field Codepoints (DSCP) over different tunnels. However, such classification is not explicitly notified to the other peer.
-This document specifies the DSCP Notification Payload, which, in a CREATE_CHILD_SA Exchange, explicitly mentions which DSCP code points will be tunneled in the newly created tunnel.  
+This document outlines the DSCP Notification Payload, which, during a CREATE_CHILD_SA Exchange, explicitly indicates the DSCP code points that will be encapsulated in the newly established tunnel.
  
 --- middle
 
+
 # Introduction
 
+In the ESP Header Compression Profile Diet-ESP {{?I-D.ietf-ipsecme-diet-esp}}, two communicating peers can reach an agreement on DSCP values as part of a compression context. Within this context, DSCP values serve not only as classifiers but are also compressed by the sending peer and subsequently decompressed by the receiving peer for both incoming and outgoing traffic. This process necessitates a mutual agreement on DSCP values for a specific pair of Security Associations (SAs). The DSCP Notification Payload outlined in this specification facilitates the negotiation of these DSCP values for a pair of SAs during the CREATE_CHILD_SA Exchange.
 
-{{!RFC4301, Section 4.1}} acknowledges that aggregating traffic with multiple DSCP over the same SA may result in inappropriate discarding of lower priority packets due to the windowing mechanism used by this feature.
-To address such concern, {{!RFC4301, Section 4.1}} recommends the sender implements a "classifier" mechanism which dispatches the traffic over multiple SAs.
-However, the peer is not able to indicate the other peer it is classifying traffic according to its DSCP values, nor how DSCP values are classified.
+Furthermore, the explicit negotiation of DSCP values enhances the "classifier" mechanism, allowing for the establishment of this mechanism and the agreement on various clusters of DSCP values to be considered for each pair of SAs. {{!RFC4301, Section 4.1}} recognizes that aggregating traffic with multiple DSCP values over a single SA may lead to the inappropriate discarding of lower-priority packets due to the windowing mechanism employed by this feature. To mitigate this issue, {{!RFC4301, Section 4.1}} advises that the sender implement a "classifier" mechanism to distribute traffic across multiple SAs. While {{!RFC4301, Section 4.4.2.1}} refers to the "DSCP values" fields in the Security Association Database (SAD), {{!RFC7296}} does not provide a way for peers to indicate which classification is ongoing nor which "DSCP values" are linked to the created SA. This document addresses that deficiency by specifying the DSCP Notification Payload, which explicitly identifies the DSCP code points that will be tunneled in the newly established tunnel during a CREATE_CHILD_SA Exchange. 
 
-While {{!RFC4301, Section 4.4.2.1}} mentions the "DSCP values" fields in the Security Association Database (SAD), {{!RFC7296}} does not provides a way to for peers to indicate which "DSCP values" are associated to the created SA.
-This document fills that gap and specifies the DSCP Notification Payload, which, in a CREATE_CHILD_SA Exchange, explicitly mentions which DSCP code points will be tunneled in the newly created tunnel.  
+It is essential to recognize that in a standard "classifier" context, there is no necessity for the same cluster of DSCP values to be linked to both the inbound and outbound Security Associations (SAs) of a specific pair. Typically, one peer may employ one pair of SAs, while the other peer may choose a different pair. This flexibility arises because DSCP values are applied exclusively by the sending node, rather than the receiving node. Although the use of the DSCP Notification Payload does not inhibit such configurations, it is likely to diminish their occurrence. Conversely, we anticipate that the explicit negotiation of DSCP values and pairs of SAs will facilitate the management of these "classifiers."
 
 # RFC4301 clarification {#sec-rfc4301}
 
@@ -74,7 +76,7 @@ This document fills that gap and specifies the DSCP Notification Payload, which,
 The text does not clearly specify what happens when the DSCP of a packet does not match any of the corresponding DSCP values.
 This document proposes the following text:
 
-*  DSCP values -- the set of DSCP values allowed for packets carried
+* DSCP values -- the set of DSCP values allowed for packets carried
       over this SA. If no values are specified, no DSCP-specific
       filtering is applied.  If one or more values are specified, these
       are used to select one SA among several that match the traffic
