@@ -1,14 +1,14 @@
 ---
 title: Differentiated Services Field Codepoints Internet Key Exchange version 2 Notification
 abbrev: DSCP Notify Payload
-docname: draft-mglt-ipsecme-dscp-np-02
-ipr: trust200902
+docname: draft-mglt-ipsecme-dscp-np-03
+ipr: pre5378Trust200902
 area: Security
 wg: IPsecme
 kw: Internet-Draft
 cat: std
 stream: IETF
-updates: RFC4301
+updates: 4301
 
 pi:
   toc: yes
@@ -46,9 +46,14 @@ author:
 
 --- abstract
 
-This document outlines the DSCP Notification Payload, which, during a CREATE_CHILD_SA Exchange, explicitly indicates the DSCP code points that will be encapsulated in the newly established tunnel.
+This document outlines the DSCP Notification Payload, which, during a CREATE_CHILD_SA Exchange, explicitly indicates the DSCP code points that will be encapsulated in the newly established tunnel.  This document updates RFC 4301.
  
 --- middle
+
+
+#  Requirements Notation
+
+{::boilerplate bcp14}
 
 
 # Introduction
@@ -59,18 +64,11 @@ Furthermore, the explicit negotiation of DSCP values enhances the "classifier" m
 
 It is essential to recognize that in a standard "classifier" context, there is no necessity for the same cluster of DSCP values to be linked to both the inbound and outbound Security Associations (SAs) of a specific pair. Typically, one peer may employ one pair of SAs, while the other peer may choose a different pair. This flexibility arises because DSCP values are applied exclusively by the sending node, rather than the receiving node. Although the use of the DSCP Notification Payload does not inhibit such configurations, it is likely to diminish their occurrence. Conversely, we anticipate that the explicit negotiation of DSCP values and pairs of SAs will facilitate the management of these "classifiers."
 
-# RFC4301 clarification {#sec-rfc4301}
+# RFC4301 Clarification {#sec-rfc4301}
 
 {{!RFC4301, Section 4.4.2.1}} mentions
 
-~~~
-    o DSCP values -- the set of DSCP values allowed for packets carried
-      over this SA.  If no values are specified, no DSCP-specific
-      filtering is applied.  If one or more values are specified, these
-      are used to select one SA among several that match the traffic
-      selectors for an outbound packet.  Note that these values are NOT
-      checked against inbound traffic arriving on the SA.
-~~~
+* DSCP values -- the set of DSCP values allowed for packets carried over this SA.  If no values are specified, no DSCP-specific filtering is applied.  If one or more values are specified, these are used to select one SA among several that match the traffic selectors for an outbound packet.  Note that these values are NOT checked against inbound traffic arriving on the SA.
 
 
 The text does not clearly specify what happens when the DSCP of a packet does not match any of the corresponding DSCP values.
@@ -81,15 +79,20 @@ This document proposes the following text:
       filtering is applied.  If one or more values are specified, these
       are used to select one SA among several that match the traffic
       selectors for an outbound packet. In case of multiple matches a preference to the most selective list DSCP value could be implemented by the peer's policy. 
-      If the DSCP value of the packet does not match any of the DSCP values provided by the associated matching SAs and there is at least one SA with no DSCP-specific filtering, then, one of these SA SHOULD be selected. On the other hand, if all SAs have a DSCP filtering, then, any of the matching SAs can be selected. Note that these values MUST NOT be checked against inbound traffic arriving on the SA.
+      If the DSCP value of the packet does not match any of the DSCP values provided by the associated matching SAs and there is at least one SA with no DSCP-specific filtering, then, one of these SA SHOULD be selected. On the other hand, if all SAs have DSCP filtering, then, any of the matching SAs can be selected. Note that these values MUST NOT be checked against inbound traffic arriving on the SA.
 
 
 # Protocol Overview
 
-The illustrative example of this section considers Expedited Forwarding (EF) with low latency traffic has its own IPsec tunnel, Assured Forward (AF) classes with different drop precedence and may take a different route have their own tunnel and all remaining DSCP values are put in another tunnel.  
-This section details how a peer uses the DSCP Notify Payload to classify traffic carrying the DSCP values AF11 or AF3 in one tunnel, traffic carrying a DSCP value of EF in another tunnel and traffic with other DSCP values a third tunnel.
-This latest SA is designated as the default no-DSCP specific SA. It is RECOMMENDED to configure the Security Policy Data Base (SPD), so that such a default no-DSCP specific SA is created and it is RECOMMENDED its creation happens prior the SA with specific DSCP values. 
-Note that according to {{sec-rfc4301}}, there is no specific ordering, but starting with the no-DSCP specific SA ensures compatibility with IPsec implementation that would for example discard or create a new SA when the DSCP do not match.
+The illustrative example of this section considers the following use case:
+
+* Expedited Forwarding (EF) with low latency traffic has its own IPsec tunnel,
+* Assured Forward (AF) classes with different drop precedence (which may take a different route) have their own tunnel,
+* and all remaining DSCP values are put into a third tunnel.
+
+This section details how a peer uses the DSCP Notify Payload to classify traffic carrying the DSCP values AF11 or AF3 in one tunnel, traffic carrying a DSCP value of EF in another tunnel, and traffic with other DSCP values in a third tunnel.
+The third SA is designated as the default no-DSCP specific SA. It is RECOMMENDED to configure the Security Policy Data Base (SPD), so that such a default no-DSCP specific SA is created and it is RECOMMENDED its creation happens prior to the SA with specific DSCP values. 
+Note that according to {{sec-rfc4301}}, there is no specific ordering, but starting with the no-DSCP specific SA ensures compatibility with an IPsec implementation that would for example discard or create a new SA when the DSCP does not match.
 
 Generally, it is recommended that the outer DSCP value matches the inner DSCP value so that the tunneled packet be treated similarly to the inner packet. Such behavior is provided by setting the Bypass DSCP to True.
 If the initiator prefers for example every tunneled packet being treated similarly, then, an explicit mapping needs to be indicated. Typically, the initiator may be willing to prevent reordered traffic to fall outside the anti-replay windows.
@@ -97,7 +100,7 @@ Note that such policy is implemented by each peer.
 
 ~~~
    Initiator                         Responder
-   -------------------------------------------------------------------
+   ----------------------------------------------------------------
    HDR, SK {IDi, [CERT,] [CERTREQ,]
        [IDr,] AUTH, SAi2,
        TSi, TSr}  -->
@@ -110,19 +113,19 @@ Once the no-DSCP specific SA is created, all traffic with any DSCP value is stee
 The initiator specifies the DSCP values being classified in that SA with a DSCP Notify Payload that carries the DSCP values.
 
 If the responder supports the DSCP Notify Payload, it SHOULD respond with a Notify Payload that indicates the DSCP values selected for that tunnel. 
-By default these values SHOULD be the ones specified by the initiator, but the responder's policy MAY select other values. If the responder does not want to perform DSCP filtering, the responder SHOULD send a empty DSCP Notify Payload in order to at least indicate the support of the DSCP Notify Payload. 
+By default these values SHOULD be the ones specified by the initiator, but the responder's policy MAY select other values. If the responder does not want to perform DSCP filtering, the responder SHOULD send an empty DSCP Notify Payload, in order to at least indicate support for the DSCP Notify Payload. 
     
-As specified in {{!RFC7296, Section 3.10.1}}, Notify Payload with status type MUST be ignored if not recognized.
-The absence of a DSCP Notify Payload by the responder may be due to the responder not supporting the notification or not advertising the application of DSCP filtering. 
-We do not consider that the absence of classification by the responder  prevents the SA to be created. The classification is at least performed for the outbound stream, which is sufficient to justify the creation of the additional SA.
+As specified in {{!RFC7296, Section 3.10.1}}, a Notify Payload with status type MUST be ignored if it is not recognized.
+The absence of a DSCP Notify Payload by the responder may be due to the responder not supporting the notification, or not advertising the application of DSCP filtering. 
+We do not consider that the absence of classification by the responder prevents the SA from being created. The classification is at least performed for the outbound stream, which is sufficient to justify the creation of the additional SA.
 Note also that DSCP values are not agreed, and the responder cannot for example narrow down the list of DSCP values being classified.
-If that would cause a significant issue, the responder can create another SA with the narrow down list of DSCP values. The responder may also REKEY_SA the previously SA to redefine the DSCP values to be considered.
+If that would cause a significant issue, the responder can create another SA with the narrowed-down list of DSCP values. The responder may also REKEY_SA the previous SA to redefine the DSCP values to be considered.
 
 When multiple DSCP values are indicated, and the initiator is mapping the outer DSCP value, the outer DSCP value is expected to be one of these values.
 
 ~~~
    Initiator                         Responder
-   -------------------------------------------------------------------
+   ----------------------------------------------------------------
    HDR, SK {SA, Ni, KEi, N(DSCP, AF11, AF3)} -->
 
                                 <--  HDR, SK {SA, Nr, KEr, 
@@ -134,7 +137,7 @@ The initiator may then create additional child SAs specifying other DSCP values.
 ~~~
 
    Initiator                         Responder
-   -------------------------------------------------------------------
+   ----------------------------------------------------------------
    HDR, SK {SA, Ni, KEi, N(DSCP, EE)} -->
 
                                 <--  HDR, SK {SA, Nr, KEr}
@@ -147,9 +150,9 @@ The initiator may then create additional child SAs specifying other DSCP values.
 
 During the CREATE_CHILD_SA exchange, the initiator or the responder MAY indicate to the other peer the DSCP filtering policy applied to the SA. This is done via the DSCP Notify Payload indicating the DSCP values being considered for that SA. 
 
-The initiator MAY send an empty DSCP Notify Payload to indicate support of the DSCP Notify Payload as well as an indication the negotiated SA as a no-DSCP specific SA. This SA MAY be followed by the creation of  DSCP specific SA. 
+The initiator MAY send an empty DSCP Notify Payload to indicate support of the DSCP Notify Payload as well as an indication the negotiated SA as a no-DSCP specific SA. This SA MAY be followed by the creation of the DSCP-specific SA. 
 
-Upon receiving a DSCP Notify Payload, if the responder supports the notification it SHOULD respond with a DSCP Notify Payload. The value indicated SHOULD be the one selected by the initiator.      
+Upon receiving a DSCP Notify Payload, if the responder supports the notification it SHOULD respond with a DSCP Notify Payload. The value indicated SHOULD be the one selected by the initiator.
 
 There is no specific error handling.
 
@@ -193,18 +196,21 @@ IANA is requested to allocate one value in the "IKEv2 Notify Message Types - Sta
 
 # Security Considerations
 
-As the DSCP value field is already defined by {{!RFC4301}} in the SA structure. As such security considerations of {{!RFC4301}} apply.
+As the DSCP value field is already defined by {{!RFC4301}} in the SA structure, the security considerations of {{!RFC4301}} apply.
 The DSCP Notification Payload communicates clearly the DSCP value field to the responder.
 
 When the tunnel mode is used, the communication of the DSCP value field could be easily interpreted by monitoring the received DSCP values of the inner traffic when that traffic is encapsulated, and so no secret information is revealed.
 When the transport mode is used, that value may be changed by the network and eventually, the value of the field could be unknown to the other peer. However, this cannot be considered as a protection mechanism, and the communication of the DSCP value cannot be considered as revealing information that was previously not revealed.
 
-The ability to indicate the other peer to set the DSCP value does not lead to the consumption of additional resources nor additional constraints. First, these SAs are anyway created either with DSCP values or without. Then, the responder may also ignore the DSCP Notification Payload and the fact that the SA has set a DSCP value field to specific values does not prevent the responder to send traffic with a different DSCP value over that SA.
+
+The notification of the set of DSCP values to the other peer does not require additional resources either for the initiator or for the receiver. The SA is created either with DSCP values or without.
+
+Similarly, the notification of the set of DSCP values to the other peer does not introduce additional constraints on the traffic. First, the responder may also ignore the DSCP Notification Payload. Then, when an SA is associated with a set of DSCP values, this does not prevent the other peer from sending traffic with a different DSCP value over that SA. In other words, traffic coming with unexpected DSCP values is not rejected as would have been the case if the DSCP values had been considered as Traffic Selectors.
 
 
 # Acknowledgements
 
-We would like to thank Scott Fluhrer for his useful comments; Valery Smyslov, Tero Kivinen for their design suggestions we carefully followed.
+We would like to thank Scott Fluhrer for his useful comments; Valery Smyslov, Tero Kivinen for their design suggestions we carefully followed. We would also like to thank William Atwood for his careful review and suggestions. 
 
 --- back
 
