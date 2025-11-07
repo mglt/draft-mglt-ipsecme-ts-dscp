@@ -1,7 +1,7 @@
 ---
 title: Differentiated Services Field Codepoints Internet Key Exchange version 2 Notification
 abbrev: DSCP Notify Payload
-docname: draft-mglt-ipsecme-dscp-np-03
+docname: draft-mglt-ipsecme-dscp-np-04
 ipr: pre5378Trust200902
 area: Security
 wg: IPsecme
@@ -210,8 +210,7 @@ Similarly, the notification of the set of DSCP values to the other peer does not
 
 # Acknowledgements
 
-We would like to thank Scott Fluhrer for his useful comments; Valery Smyslov, Tero Kivinen for their design suggestions we carefully followed. We would also like to thank William Atwood for his careful review and suggestions. 
-
+We would like to thank Scott Fluhrer for his useful comments; Valery Smyslov, Tero Kivinen for their design suggestions we carefully followed. We would also like to thank William Atwood for his careful review and suggestions.
 --- back
 
 
