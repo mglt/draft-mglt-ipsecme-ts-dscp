@@ -1,12 +1,12 @@
 ---
 title: Differentiated Services Field Codepoints Internet Key Exchange version 2 Notification
 abbrev: DSCP Notify Payload
-docname: draft-mglt-ipsecme-dscp-np-04
+docname: draft-mglt-ipsecme-dscp-np-05
 ipr: pre5378Trust200902
 area: Security
 wg: IPsecme
 kw: Internet-Draft
-cat: std
+cat: exp
 stream: IETF
 updates: 4301
 
