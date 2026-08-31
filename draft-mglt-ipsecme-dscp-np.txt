@@ -3,17 +3,19 @@
 
 
 IPsecme                                                       D. Migault
-Internet-Draft                                                J. Halpern
-Updates: 4301 (if approved)                                     S. Preda
-Intended status: Standards Track                                  D. Liu
-Expires: 1 October 2025                                      U. Parkholm
+Internet-Draft                                                  Ericsson
+Updates: 4301 (if approved)                                   J. Halpern
+Intended status: Experimental                                        HPE
+Expires: 4 March 2027                                           S. Preda
+                                                                  D. Liu
+                                                             U. Parkholm
                                                                 Ericsson
-                                                           30 March 2025
+                                                          31 August 2026
 
 
 Differentiated Services Field Codepoints Internet Key Exchange version 2
                               Notification
-                     draft-mglt-ipsecme-dscp-np-03
+                     draft-mglt-ipsecme-dscp-np-06
 
 Abstract
 
@@ -37,31 +39,25 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 1 October 2025.
+   This Internet-Draft will expire on 4 March 2027.
 
 Copyright Notice
 
-   Copyright (c) 2025 IETF Trust and the persons identified as the
+   Copyright (c) 2026 IETF Trust and the persons identified as the
    document authors.  All rights reserved.
-
-
-
-
-
-
-
-
-
-
-Migault, et al.          Expires 1 October 2025                 [Page 1]
-
-Internet-Draft             DSCP Notify Payload                March 2025
-
 
    This document is subject to BCP 78 and the IETF Trust's Legal
    Provisions Relating to IETF Documents (https://trustee.ietf.org/
    license-info) in effect on the date of publication of this document.
    Please review these documents carefully, as they describe your rights
+
+
+
+Migault, et al.           Expires 4 March 2027                  [Page 1]
+
+Internet-Draft             DSCP Notify Payload               August 2026
+
+
    and restrictions with respect to this document.  Code Components
    extracted from this document must include Revised BSD License text as
    described in Section 4.e of the Trust Legal Provisions and are
@@ -109,9 +105,13 @@ Table of Contents
 
 
 
-Migault, et al.          Expires 1 October 2025                 [Page 2]
+
+
+
+
+Migault, et al.           Expires 4 March 2027                  [Page 2]
 
-Internet-Draft             DSCP Notify Payload                March 2025
+Internet-Draft             DSCP Notify Payload               August 2026
 
 
 2.  Introduction
@@ -165,9 +165,9 @@ Internet-Draft             DSCP Notify Payload                March 2025
 
 
 
-Migault, et al.          Expires 1 October 2025                 [Page 3]
+Migault, et al.           Expires 4 March 2027                  [Page 3]
 
-Internet-Draft             DSCP Notify Payload                March 2025
+Internet-Draft             DSCP Notify Payload               August 2026
 
 
    *  DSCP values -- the set of DSCP values allowed for packets carried
@@ -221,9 +221,9 @@ Internet-Draft             DSCP Notify Payload                March 2025
 
 
 
-Migault, et al.          Expires 1 October 2025                 [Page 4]
+Migault, et al.           Expires 4 March 2027                  [Page 4]
 
-Internet-Draft             DSCP Notify Payload                March 2025
+Internet-Draft             DSCP Notify Payload               August 2026
 
 
    This section details how a peer uses the DSCP Notify Payload to
@@ -277,9 +277,9 @@ Internet-Draft             DSCP Notify Payload                March 2025
 
 
 
-Migault, et al.          Expires 1 October 2025                 [Page 5]
+Migault, et al.           Expires 4 March 2027                  [Page 5]
 
-Internet-Draft             DSCP Notify Payload                March 2025
+Internet-Draft             DSCP Notify Payload               August 2026
 
 
    As specified in [RFC7296], Section 3.10.1, a Notify Payload with
@@ -333,9 +333,9 @@ Internet-Draft             DSCP Notify Payload                March 2025
 
 
 
-Migault, et al.          Expires 1 October 2025                 [Page 6]
+Migault, et al.           Expires 4 March 2027                  [Page 6]
 
-Internet-Draft             DSCP Notify Payload                March 2025
+Internet-Draft             DSCP Notify Payload               August 2026
 
 
    Upon receiving a DSCP Notify Payload, if the responder supports the
@@ -389,9 +389,9 @@ Internet-Draft             DSCP Notify Payload                March 2025
 
 
 
-Migault, et al.          Expires 1 October 2025                 [Page 7]
+Migault, et al.           Expires 4 March 2027                  [Page 7]
 
-Internet-Draft             DSCP Notify Payload                March 2025
+Internet-Draft             DSCP Notify Payload               August 2026
 
 
      Value    Notify Messages - Status Types
@@ -445,9 +445,9 @@ Internet-Draft             DSCP Notify Payload                March 2025
 
 
 
-Migault, et al.          Expires 1 October 2025                 [Page 8]
+Migault, et al.           Expires 4 March 2027                  [Page 8]
 
-Internet-Draft             DSCP Notify Payload                March 2025
+Internet-Draft             DSCP Notify Payload               August 2026
 
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
@@ -471,12 +471,12 @@ Internet-Draft             DSCP Notify Payload                March 2025
 10.2.  Informative References
 
    [I-D.ietf-ipsecme-diet-esp]
-              Migault, D., Hatami, M., CÃ©spedes, S., Atwood, J. W.,
-              Liu, D., Guggemos, T., Bormann, C., and D. Schinazi, "ESP
+              Migault, D., Hatami, M., Céspedes, S., Atwood, J. W., Liu,
+              D., Guggemos, T., Bormann, C., and D. Schinazi, "ESP
               Header Compression with Diet-ESP", Work in Progress,
-              Internet-Draft, draft-ietf-ipsecme-diet-esp-06, 16 March
-              2025, <https://datatracker.ietf.org/api/v1/doc/document/
-              draft-ietf-ipsecme-diet-esp/>.
+              Internet-Draft, draft-ietf-ipsecme-diet-esp-11, 15
+              February 2026, <https://datatracker.ietf.org/doc/html/
+              draft-ietf-ipsecme-diet-esp-11>.
 
 Authors' Addresses
 
@@ -486,8 +486,8 @@ Authors' Addresses
 
 
    Joel Halpern
-   Ericsson
-   Email: joel.halpern@ericsson.com
+   HPE
+   Email: jmh@joelhalpern.com
 
 
    Stere Preda
@@ -501,9 +501,9 @@ Authors' Addresses
 
 
 
-Migault, et al.          Expires 1 October 2025                 [Page 9]
+Migault, et al.           Expires 4 March 2027                  [Page 9]
 
-Internet-Draft             DSCP Notify Payload                March 2025
+Internet-Draft             DSCP Notify Payload               August 2026
 
 
    U. Parkholm
@@ -557,4 +557,4 @@ Internet-Draft             DSCP Notify Payload                March 2025
 
 
 
-Migault, et al.          Expires 1 October 2025                [Page 10]
+Migault, et al.           Expires 4 March 2027                 [Page 10]

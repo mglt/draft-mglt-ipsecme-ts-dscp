@@ -1,7 +1,7 @@
 ---
 title: Differentiated Services Field Codepoints Internet Key Exchange version 2 Notification
 abbrev: DSCP Notify Payload
-docname: draft-mglt-ipsecme-dscp-np-05
+docname: draft-mglt-ipsecme-dscp-np-06
 ipr: pre5378Trust200902
 area: Security
 wg: IPsecme
@@ -24,8 +24,8 @@ author:
       -
         ins: J. Halpern
         name: Joel Halpern
-        org: Ericsson
-        email: joel.halpern@ericsson.com
+        org: HPE
+        email: jmh@joelhalpern.com
       -
         ins: S. Preda
         name: Stere Preda
